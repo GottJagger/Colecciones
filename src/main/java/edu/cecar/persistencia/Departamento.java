@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.cecar.logica;
+package edu.cecar.persistencia;
+
+import java.util.Objects;
 
 /**
  *
@@ -35,6 +37,31 @@ public class Departamento {
 
     public void setNombres(String nombres) {
         this.nombres = nombres;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 53 * hash + Objects.hashCode(this.nombres);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Departamento other = (Departamento) obj;
+        if (!Objects.equals(this.nombres, other.nombres)) {
+            return false;
+        }
+        return true;
     }
     
     
