@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.json.JSONArray;
 
 /**
@@ -43,7 +44,7 @@ public class TratamientoDato {
         JSONArray result = null;
 
         try {
-            URLConnection connection = new URL("https://my.api.mockaroo.com/empleados.json?key=6ce20c10").openConnection();
+            URLConnection connection = new URL("https://my.api.mockaroo.com/empleados.json?key=129fa950").openConnection();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8")));
             StringBuilder sb = new StringBuilder();
@@ -112,7 +113,9 @@ public class TratamientoDato {
 
         if (decision) {
 
-            listaEmpleado.forEach(e -> System.out.println(e.getIdentificador() + " " + e.getNombres() + " " + e.getEdad()));
+            listaEmpleado.forEach(e -> System.out.println("\n\n"+e.getIdentificador()+" "+e.getNombres() 
+                            + " " + e.getApellido() + " \nEDAD: " + e.getEdad()
+                            +"||" + e.getFechaNacimiento()));
         } else {
 
             Comparator<Empleado> orderByFechaDeNacimiento = new Comparator<Empleado>() {
@@ -120,7 +123,7 @@ public class TratamientoDato {
                 public int compare(Empleado o1, Empleado o2) {
                     int i = 0;
                     try {
-                        
+
                         Date fecha = new SimpleDateFormat("MM/dd/yyyy").parse(o1.getFechaNacimiento());
                         Date fecha1 = new SimpleDateFormat("MM/dd/yyyy").parse(o2.getFechaNacimiento());
 
@@ -142,7 +145,9 @@ public class TratamientoDato {
             listaEmpleado1.addAll(listaEmpleado);
             Collections.sort(listaEmpleado1, orderByFechaDeNacimiento);
 
-            listaEmpleado1.forEach(e -> System.out.println(e.getIdentificador() + " " + e.getNombres() + " " + e.getFechaNacimiento()));
+            listaEmpleado1.forEach(e -> System.out.println("\n\n"+e.getIdentificador()+" "+e.getNombres() 
+                            + " " + e.getApellido() + " \nEDAD: " + e.getEdad()
+                            +"||" + e.getFechaNacimiento()));
         }
 
     }
@@ -159,22 +164,41 @@ public class TratamientoDato {
 
                 Empleado empleado = (Empleado) jt.next();
                 if (empleado.getDepartamento().equals(departamento.getNombres()) && (empleado.getEdad() < max && empleado.getEdad() > min)) {
-                    System.out.println(empleado.getNombres() + " " + empleado.getApellido() + " EDAD: " + empleado.getEdad());
+                    System.out.println(empleado.getIdentificador()+" "+empleado.getNombres() 
+                            + " " + empleado.getApellido() + " EDAD: " + empleado.getEdad()
+                            +" " + empleado.getFechaNacimiento());
                 }
-
             }
         }
-
     }
 
     public static void main(String[] args) {
         try {
-            
+
             JSONArray result = extraerEmpleados();
 
-            mostrarEmpleados(guardarDatosEmpleados(result), true);
-            System.out.println("\n************************************************************************");
-            mostrarDepartamentos(guardarDatosDepartamentos(result), guardarDatosEmpleados(result), 35, 18);
+            do {
+                switch (JOptionPane.showInputDialog("digite opcion:\nOpcion 1: mostrar Empleado.\nOpcion 2: mostrar Departamento.")) {
+                    case "1":
+                        switch (JOptionPane.showInputDialog("digite Opcion de ordenamiento:\n1.Identificador\n2.fecha de Nacimiento")) {
+                            case "1":
+                                mostrarEmpleados(guardarDatosEmpleados(result), true);
+                                System.out.println("\n************************************************************************");
+                                break;
+                            case "2":
+                                mostrarEmpleados(guardarDatosEmpleados(result), false);
+                                System.out.println("\n************************************************************************");
+                                break;
+                        }
+                        break;
+                    case "2":
+                        System.out.println("\n************************************************************************");
+                        mostrarDepartamentos(guardarDatosDepartamentos(result), guardarDatosEmpleados(result),
+                                Integer.parseInt(JOptionPane.showInputDialog("digite rango Maximo de edad")),
+                                Integer.parseInt(JOptionPane.showInputDialog("digite rango minimo de edad")));
+                        break;
+                }
+            } while (true);
 
         } catch (IOException ex) {
             Logger.getLogger(TratamientoDato.class.getName()).log(Level.SEVERE, null, ex);
